@@ -8,13 +8,14 @@ import com.barashkovmalofeev.tasktracker.service.UserService;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@WebServlet("/register")
+@WebServlet("/api/register")
 public class RegistrationServlet extends HttpServlet {
 
     @EJB
@@ -48,8 +49,10 @@ public class RegistrationServlet extends HttpServlet {
             // 3. Обработка успеха
             request.getSession().setAttribute("success", "User " + newUser.getUsername() + " registered successfully!");
             // Перенаправляем на главную или страницу входа, чтобы избежать двойной отправки формы (Post/Redirect/Get)
-            response.sendRedirect(request.getContextPath() + "/home");
+            Cookie cookie = new Cookie("userSession", newUser.getId().toString());
 
+            response.addCookie(cookie);
+            response.sendRedirect("/");
         } catch (Exception e) {
             request.setAttribute("error", e.getMessage());
             request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);

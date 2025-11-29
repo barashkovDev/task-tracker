@@ -4,4 +4,20 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
                              https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
          version="5.0">
+
+    <!-- Welcome file list -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+<!--    &lt;!&ndash; API сервлеты &ndash;&gt;-->
+<!--    <servlet>-->
+<!--        <servlet-name>ApiServlet</servlet-name>-->
+<!--        <servlet-class>com.yourpackage.ApiServlet</servlet-class>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>ApiServlet</servlet-name>-->
+<!--        <url-pattern>/api/*</url-pattern>-->
+<!--    </servlet-mapping>-->
+
 </web-app>
