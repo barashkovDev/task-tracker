@@ -1,6 +1,6 @@
 package com.barashkovmalofeev.tasktracker.service;
 
-import com.barashkovmalofeev.tasktracker.model.User;
+import com.barashkovmalofeev.tasktracker.model.entity.User;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

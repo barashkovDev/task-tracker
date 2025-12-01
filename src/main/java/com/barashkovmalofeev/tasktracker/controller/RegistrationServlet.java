@@ -2,7 +2,7 @@ package com.barashkovmalofeev.tasktracker.controller;
 
 
 
-import com.barashkovmalofeev.tasktracker.model.User;
+import com.barashkovmalofeev.tasktracker.model.entity.User;
 import com.barashkovmalofeev.tasktracker.service.UserService;
 
 import javax.ejb.EJB;

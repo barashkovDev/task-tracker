@@ -20,6 +20,11 @@ public class SpaFilter implements Filter {
             return;
         }
 
+        if (path.startsWith("/rest/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // Пропускаем статические ресурсы
         if (isStaticResource(path)) {
             chain.doFilter(request, response);
