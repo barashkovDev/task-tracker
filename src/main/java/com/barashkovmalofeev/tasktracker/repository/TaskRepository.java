@@ -23,4 +23,18 @@ public class TaskRepository {
                 .setParameter("userId", userId)
                 .getResultList();
     }
+
+    public Task saveTask(Task task) {
+        if (task.getId() == null) {
+            em.persist(task);  // INSERT
+            return task;
+        } else {
+            return em.merge(task);  // UPDATE
+        }
+    }
+
+    public Task findById(Long id) {
+        return em.find(Task.class, id);
+    }
+
 }

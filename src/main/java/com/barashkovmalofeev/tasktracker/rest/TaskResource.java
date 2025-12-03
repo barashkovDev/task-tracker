@@ -1,14 +1,13 @@
 package com.barashkovmalofeev.tasktracker.rest;
 
-import com.barashkovmalofeev.tasktracker.model.dto.TaskDTO;
+import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
+import com.barashkovmalofeev.tasktracker.model.dto.TaskResponseDTO;
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
 import com.barashkovmalofeev.tasktracker.service.TaskService;
 
 import javax.ejb.EJB;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -31,11 +30,42 @@ public class TaskResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        List<TaskDTO> taskDTOs = tasks.stream()
-                .map(task -> new TaskDTO(task))
+        List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
+                .map(task -> new TaskResponseDTO(task))
                 .collect(Collectors.toList());
 
-        return Response.ok(taskDTOs).build();
+        return Response.ok(taskResponseDTOS).build();
     }
+
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response createTask(TaskCreateDTO taskDTO){
+        try {
+            // Создаем Task из DTO
+            Task task = taskService.createTask(taskDTO);
+
+            // Возвращаем DTO для ответа
+            TaskResponseDTO responseDTO = new TaskResponseDTO(task);
+
+            return Response.status(Response.Status.CREATED)
+                    .entity(responseDTO)
+                    .build();
+
+        } catch (EntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("User or project not found: " + e.getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error creating task: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    // Реализовать удаление таски
+    // Вопрос: Получаем от клиента id или полноценную таску
+    //public Response deleteTask(Long id)
+
 
 }

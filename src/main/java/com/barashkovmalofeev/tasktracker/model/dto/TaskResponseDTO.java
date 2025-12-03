@@ -1,11 +1,10 @@
-// TaskSimpleDTO.java
 package com.barashkovmalofeev.tasktracker.model.dto;
 
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
 
 import java.time.LocalDate;
 
-public class TaskDTO {
+public class TaskResponseDTO {
     private Long id;
     private String name;
     private String description;
@@ -22,7 +21,7 @@ public class TaskDTO {
     private Long projectId;
 
     // Конструктор из Entity
-    public TaskDTO(Task task) {
+    public TaskResponseDTO(Task task) {
         this.id = task.getId();
         this.name = task.getName();
         this.description = task.getDescription();
