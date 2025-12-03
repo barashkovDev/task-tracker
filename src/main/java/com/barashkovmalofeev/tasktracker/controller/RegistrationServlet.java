@@ -51,6 +51,10 @@ public class RegistrationServlet extends HttpServlet {
             // Перенаправляем на главную или страницу входа, чтобы избежать двойной отправки формы (Post/Redirect/Get)
             Cookie cookie = new Cookie("userSession", newUser.getId().toString());
 
+            cookie.setPath("/");
+
+            cookie.setMaxAge(7 * 24 * 60 * 60);
+
             response.addCookie(cookie);
             response.sendRedirect("/");
         } catch (Exception e) {
