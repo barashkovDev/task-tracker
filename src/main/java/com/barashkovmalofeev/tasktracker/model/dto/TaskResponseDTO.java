@@ -1,6 +1,9 @@
 package com.barashkovmalofeev.tasktracker.model.dto;
 
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
+import com.barashkovmalofeev.tasktracker.model.enums.TaskComplexity;
+import com.barashkovmalofeev.tasktracker.model.enums.TaskPriority;
+import com.barashkovmalofeev.tasktracker.model.enums.TaskStatus;
 
 import java.time.LocalDate;
 
@@ -11,9 +14,9 @@ public class TaskResponseDTO {
     private Long number;
     private LocalDate productionDate;
     private LocalDate endDate;
-    private String complexity;
-    private String priority;
-    private String status;
+    private TaskComplexity complexity;
+    private TaskPriority priority;
+    private TaskStatus status;
     private Boolean isTaskCompleted;
 
     // Только ID связанных сущностей
@@ -50,9 +53,9 @@ public class TaskResponseDTO {
     public Long getNumber() { return number; }
     public LocalDate getProductionDate() { return productionDate; }
     public LocalDate getEndDate() { return endDate; }
-    public String getComplexity() { return complexity; }
-    public String getPriority() { return priority; }
-    public String getStatus() { return status; }
+    public TaskComplexity getComplexity() { return complexity; }
+    public TaskPriority getPriority() { return priority; }
+    public TaskStatus getStatus() { return status; }
     public Boolean getTaskCompleted() { return isTaskCompleted; }
     public Long getAssignedUserId() { return assignedUserId; }
     public Long getProjectId() { return projectId; }

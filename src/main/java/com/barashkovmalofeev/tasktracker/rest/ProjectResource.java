@@ -1,0 +1,80 @@
+package com.barashkovmalofeev.tasktracker.rest;
+
+import com.barashkovmalofeev.tasktracker.model.dto.ProjectCreateDTO;
+import com.barashkovmalofeev.tasktracker.model.dto.ProjectResponseDTO;
+import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
+import com.barashkovmalofeev.tasktracker.model.dto.TaskResponseDTO;
+import com.barashkovmalofeev.tasktracker.model.entity.Project;
+import com.barashkovmalofeev.tasktracker.model.entity.Task;
+import com.barashkovmalofeev.tasktracker.service.ProjectService;
+import com.barashkovmalofeev.tasktracker.service.TaskService;
+
+import javax.ejb.EJB;
+import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Path("/projects")
+public class ProjectResource {
+    @EJB
+    private ProjectService projectService;
+
+    @GET
+    @Path("/user/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getProjectsByUserId(@PathParam("userId") Long userId) {
+
+        List<ProjectResponseDTO> projects = projectService.getProjectsByAssignedUser(userId);
+
+        if (projects.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(projects).build();
+    }
+
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response createProject(ProjectCreateDTO projectCreateDTO){
+        try {
+
+            Project project = projectService.createProject(projectCreateDTO);
+
+            // Возвращаем DTO для ответа
+            ProjectResponseDTO responseDTO = new ProjectResponseDTO(project);
+
+            return Response.status(Response.Status.CREATED)
+                    .entity(responseDTO)
+                    .build();
+
+        } catch (EntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("User or project not found: " + e.getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error creating task: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @DELETE
+    @Path("/{projectId}")
+    public Response deleteProject(@PathParam("projectId") Long projectId) {
+        try {
+            projectService.deleteTaskById(projectId);
+
+            return Response.status(Response.Status.OK)
+                    .build();
+
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting project: " + e.getMessage())
+                    .build();
+        }
+    }
+}

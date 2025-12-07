@@ -1,5 +1,9 @@
 package com.barashkovmalofeev.tasktracker.model.entity;
 
+import com.barashkovmalofeev.tasktracker.model.enums.TaskComplexity;
+import com.barashkovmalofeev.tasktracker.model.enums.TaskPriority;
+import com.barashkovmalofeev.tasktracker.model.enums.TaskStatus;
+
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -25,17 +29,17 @@ public class Task {
     private User assignedUser;
     private LocalDate productionDate;
     private LocalDate endDate;
-    private String complexity;
-    private String priority;
-    private String status;
+    private TaskComplexity complexity;
+    private TaskPriority priority;
+    private TaskStatus status;
     private Boolean isTaskCompleted;
     private Duration spentTime;
 
     public Task(){}
 
     public Task(String name, Long number, String description, Project project, User assignedUser,
-                LocalDate productionDate, LocalDate endDate, String complexity, String priority, String status,
-                Boolean isTaskCompleted, Duration spentTime) {
+                LocalDate productionDate, LocalDate endDate, TaskComplexity complexity, TaskPriority priority,
+                TaskStatus status, Boolean isTaskCompleted, Duration spentTime) {
         this.name = name;
         this.number = number;
         this.description = description;
@@ -74,27 +78,27 @@ public class Task {
         isTaskCompleted = taskCompleted;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    public String getPriority() {
+    public TaskPriority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(TaskPriority priority) {
         this.priority = priority;
     }
 
-    public String getComplexity() {
+    public TaskComplexity getComplexity() {
         return complexity;
     }
 
-    public void setComplexity(String complexity) {
+    public void setComplexity(TaskComplexity complexity) {
         this.complexity = complexity;
     }
 

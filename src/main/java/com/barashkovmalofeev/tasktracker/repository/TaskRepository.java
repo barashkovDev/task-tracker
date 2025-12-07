@@ -37,4 +37,9 @@ public class TaskRepository {
         return em.find(Task.class, id);
     }
 
+    public void deleteById(Long id) {
+        Task task = em.find(Task.class, id);
+        em.remove(task);
+    }
+
 }

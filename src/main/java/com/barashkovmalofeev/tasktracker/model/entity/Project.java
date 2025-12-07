@@ -47,4 +47,12 @@ public class Project {
         this.users = users;
     }
 
+    public Set<Long> getUserIds() {
+        Set<Long> userIds = new HashSet<>();
+        for(User user : this.getUsers()) {
+            userIds.add(user.getId());
+        }
+        return userIds;
+    }
+
 }

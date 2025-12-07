@@ -63,9 +63,75 @@ public class TaskResource {
         }
     }
 
-    // Реализовать удаление таски
-    // Вопрос: Получаем от клиента id или полноценную таску
-    //public Response deleteTask(Long id)
+    @DELETE
+    @Path("/{taskId}")
+    public Response deleteTask(@PathParam("taskId") Long taskId) {
+        try {
+            taskService.deleteTaskById(taskId);
+
+            return Response.status(Response.Status.OK)
+                    .build();
+
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting task: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("/user")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTasksByUserIdCookie(@CookieParam("userId") String userId) {
+
+        if (userId == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("User ID cookie is required")
+                    .build();
+        }
+
+        List<Task> tasks = taskService.getTasksByAssignedUser(Long.parseLong(userId));
+
+        if (tasks.isEmpty()) {
+            // Возвращаем HTTP 404
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
+                .map(task -> new TaskResponseDTO(task))
+                .collect(Collectors.toList());
+
+        return Response.ok(taskResponseDTOS).build();
+    }
+
+    @PATCH
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{taskId}")
+    public Response updateTask(@PathParam("taskId") Long taskId, TaskCreateDTO taskCreateDTO) {
+
+        try {
+            // Создаем Task из DTO
+            Task updatedTask = taskService.updateTask(taskId, taskCreateDTO);
+
+            // Возвращаем DTO для ответа
+            TaskResponseDTO responseDTO = new TaskResponseDTO(updatedTask);
+
+            return Response.status(Response.Status.CREATED)
+                    .entity(responseDTO)
+                    .build();
+
+        } catch (EntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("User or project not found: " + e.getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error updating task: " + e.getMessage())
+                    .build();
+        }
+    }
+
 
 
 }
