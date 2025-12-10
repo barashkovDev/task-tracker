@@ -34,17 +34,13 @@ public class ProjectService {
 
     public List<ProjectResponseDTO> getProjectsByAssignedUser(Long userId) {
         List<Project> projects = projectRepository.findByAssignedUserId(userId);
+
         return projects.stream()
                 .map(project -> {
-                    // Теперь users инициализированы
-                    Set<Long> userIds = project.getUsers().stream()
-                            .map(User::getId)
-                            .collect(Collectors.toSet());
-
                     return new ProjectResponseDTO(
                             project.getId(),
                             project.getName(),
-                            userIds
+                            project.getUsers()
                     );
                 })
                 .collect(Collectors.toList());

@@ -4,6 +4,8 @@ import com.barashkovmalofeev.tasktracker.model.enums.TaskComplexity;
 import com.barashkovmalofeev.tasktracker.model.enums.TaskPriority;
 import com.barashkovmalofeev.tasktracker.model.enums.TaskStatus;
 
+import java.time.LocalDate;
+
 public class TaskUpdateDTO {
 
     private String name;
@@ -13,5 +15,6 @@ public class TaskUpdateDTO {
     private TaskPriority priority;
     private TaskComplexity complexity;
     private TaskStatus status;
+    private LocalDate endDate;
 
 }

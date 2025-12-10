@@ -46,6 +46,7 @@ public class TaskService {
         task.setStatus(TaskStatus.NEW);
         task.setTaskCompleted(false);
         task.setProductionDate(LocalDate.now());
+        task.setEndDate(taskDTO.getEndDate());
 
         if (taskDTO.getAssignedUserId() != null) {
             User user = userRepository.findById(taskDTO.getAssignedUserId());
@@ -80,6 +81,7 @@ public class TaskService {
         task.setPriority(taskDTO.getPriority());
         task.setComplexity(taskDTO.getComplexity());
         task.setTaskCompleted(false);
+        task.setEndDate(taskDTO.getEndDate());
         if(taskDTO.getStatus().equals(TaskStatus.DONE)) {
             task.setEndDate(LocalDate.now());
             //task.setSpentTime(Duration.between(task.getProductionDate(), task.getEndDate()));

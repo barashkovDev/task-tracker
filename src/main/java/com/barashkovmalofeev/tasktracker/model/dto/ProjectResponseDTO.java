@@ -1,20 +1,22 @@
 package com.barashkovmalofeev.tasktracker.model.dto;
 
 import com.barashkovmalofeev.tasktracker.model.entity.Project;
+import com.barashkovmalofeev.tasktracker.model.entity.User;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ProjectResponseDTO {
     private Long id;
     private String name;
-    Set<Long> userIds;
+    private Set<UserDTO> users;
 
-    public Set<Long> getUserIds() {
-        return userIds;
+    public Set<UserDTO> getUsers() {
+        return users;
     }
 
-    public void setUserIds(Set<Long> userIds) {
-        this.userIds = userIds;
+    public void setUsers(Set<UserDTO> users) {
+        this.users = users;
     }
 
     public Long getId() {
@@ -38,12 +40,12 @@ public class ProjectResponseDTO {
     public ProjectResponseDTO(Project project) {
         this.id = project.getId();
         this.name = project.getName();
-        this.userIds = project.getUserIds();
+        this.users = project.getUsers().stream().map(user -> new UserDTO(user)).collect(Collectors.toSet());
     }
 
-    public ProjectResponseDTO(Long id, String name, Set<Long> userIds) {
+    public ProjectResponseDTO(Long id, String name, Set<User> users) {
         this.id = id;
         this.name = name;
-        this.userIds = userIds;
+        this.users = users.stream().map(user -> new UserDTO(user)).collect(Collectors.toSet());
     }
 }

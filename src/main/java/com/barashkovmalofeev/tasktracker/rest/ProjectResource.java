@@ -23,15 +23,15 @@ public class ProjectResource {
     private ProjectService projectService;
 
     @GET
-    @Path("/user/{userId}")
+    @Path("/user")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProjectsByUserId(@PathParam("userId") Long userId) {
+    public Response getProjectsByUserId(@CookieParam("userId") Long userId) {
 
         List<ProjectResponseDTO> projects = projectService.getProjectsByAssignedUser(userId);
 
-        if (projects.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+//        if (projects.isEmpty()) {
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        }
 
         return Response.ok(projects).build();
     }

@@ -4,6 +4,7 @@ import com.barashkovmalofeev.tasktracker.model.enums.TaskComplexity;
 import com.barashkovmalofeev.tasktracker.model.enums.TaskPriority;
 import com.barashkovmalofeev.tasktracker.model.enums.TaskStatus;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
 public class TaskCreateDTO {
@@ -14,6 +15,7 @@ public class TaskCreateDTO {
     private TaskPriority priority;
     private TaskComplexity complexity;
     private TaskStatus status;
+    private LocalDate endDate;
 
 
     public TaskCreateDTO(){}
@@ -45,6 +47,14 @@ public class TaskCreateDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public String getDescription() {

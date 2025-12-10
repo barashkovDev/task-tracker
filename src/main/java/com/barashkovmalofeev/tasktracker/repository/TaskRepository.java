@@ -10,14 +10,10 @@ import java.util.List;
 @Stateless // Делает этот класс управляемым контейнером EJB, обеспечивая транзакции
 public class TaskRepository {
 
-    // Внедрение EntityManager для работы с БД
-    @PersistenceContext(unitName = "taskTrackerPU") // Имя Persistence Unit
+    @PersistenceContext(unitName = "taskTrackerPU")
     private EntityManager em;
 
-    // Метод для поиска задач по ID пользователя
     public List<Task> findByAssignedUserId(Long userId) {
-        // Использование JPA QL (JPQL) для запроса
-        System.out.println("Received userId: " + userId);
         return em.createQuery(
                         "SELECT t FROM Task t WHERE t.assignedUser.id = :userId", Task.class)
                 .setParameter("userId", userId)
