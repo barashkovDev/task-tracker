@@ -49,7 +49,7 @@ public class RegistrationServlet extends HttpServlet {
             // 3. Обработка успеха
             request.getSession().setAttribute("success", "User " + newUser.getUsername() + " registered successfully!");
             // Перенаправляем на главную или страницу входа, чтобы избежать двойной отправки формы (Post/Redirect/Get)
-            Cookie cookie = new Cookie("userSession", newUser.getId().toString());
+            Cookie cookie = new Cookie("userId", newUser.getId().toString());
 
             cookie.setPath("/");
 

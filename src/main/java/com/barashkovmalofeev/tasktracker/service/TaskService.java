@@ -79,6 +79,7 @@ public class TaskService {
         task.setName(taskDTO.getName());
         task.setDescription(taskDTO.getDescription());
         task.setPriority(taskDTO.getPriority());
+        task.setStatus(taskDTO.getStatus());
         task.setComplexity(taskDTO.getComplexity());
         task.setTaskCompleted(false);
         task.setEndDate(taskDTO.getEndDate());
