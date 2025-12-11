@@ -20,6 +20,13 @@ public class TaskRepository {
                 .getResultList();
     }
 
+    public List<Task> findByProject(Long projectId) {
+        return em.createQuery(
+                        "SELECT t FROM Task t WHERE t.project.id = :projectId", Task.class)
+                .setParameter("projectId", projectId)
+                .getResultList();
+    }
+
     public Task saveTask(Task task) {
         if (task.getId() == null) {
             em.persist(task);  // INSERT
@@ -35,7 +42,15 @@ public class TaskRepository {
 
     public void deleteById(Long id) {
         Task task = em.find(Task.class, id);
+        if (task == null)
+            return;
+
+        em.createQuery("DELETE FROM Comment c WHERE c.task = :task")
+                .setParameter("task", task)
+                .executeUpdate();
+
         em.remove(task);
     }
+
 
 }

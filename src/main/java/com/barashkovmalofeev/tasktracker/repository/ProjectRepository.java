@@ -7,6 +7,7 @@ import org.jboss.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Set;
@@ -29,10 +30,10 @@ public class ProjectRepository {
 
     public Project saveProject(Project project) {
         if (project.getId() == null) {
-            em.persist(project);  // INSERT
+            em.persist(project);
             return project;
         } else {
-            return em.merge(project);  // UPDATE
+            return em.merge(project);
         }
     }
 
@@ -62,26 +63,45 @@ public class ProjectRepository {
 
 
     public void deleteProjectById(Long projectId) {
-        // 1. Находим проект
         Project project = em.find(Project.class, projectId);
         if (project == null) return;
 
-        LOG.infof("Удаление проекта ID: %d", projectId);
-
-        // 2. Разрываем связи с пользователями
         for (User user : project.getUsers()) {
-            user.getProjects().remove(project); // Удаляем проект из коллекции пользователя
+            user.getProjects().remove(project);
         }
-        project.getUsers().clear(); // Очищаем коллекцию проекта
+        project.getUsers().clear();
 
-        // 3. Удаляем все задачи проекта (если нужно)
         em.createQuery("DELETE FROM Task t WHERE t.project = :project")
                 .setParameter("project", project)
                 .executeUpdate();
 
-        // 4. Теперь можно удалить проект
         em.remove(project);
 
-        LOG.infof("Проект ID: %d удалён", projectId);
     }
+
+    public void addUserToProject(Long projectId, Long userId) {
+        Project project = em.find(Project.class, projectId);
+        User user = em.find(User.class, userId);
+
+        if (project == null) {
+            throw new EntityNotFoundException("Project not found with id: " + projectId);
+        }
+        if (user == null) {
+            throw new EntityNotFoundException("User not found with id: " + userId);
+        }
+
+        // Проверяем, не добавлен ли уже пользователь
+        if (!project.getUsers().contains(user)) {
+            project.getUsers().add(user);
+            user.getProjects().add(project);
+            em.merge(project);
+            em.merge(user);
+
+            LOG.infof("User ID: %d added to Project ID: %d", userId, projectId);
+        } else {
+            LOG.infof("User ID: %d is already in Project ID: %d", userId, projectId);
+        }
+    }
+
+
 }

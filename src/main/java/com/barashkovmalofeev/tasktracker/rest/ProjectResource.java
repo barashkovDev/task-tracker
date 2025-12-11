@@ -15,6 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Path("/projects")
@@ -29,9 +30,6 @@ public class ProjectResource {
 
         List<ProjectResponseDTO> projects = projectService.getProjectsByAssignedUser(userId);
 
-//        if (projects.isEmpty()) {
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
 
         return Response.ok(projects).build();
     }
@@ -62,6 +60,34 @@ public class ProjectResource {
         }
     }
 
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    @Path("/{projectId}")
+    public Response addUserToProject(@PathParam("projectId") Long projectId,  Map<String, Object> userData) {
+        try {
+            String username = (String) userData.get("username");
+
+            if(projectService.addUserToProject(projectId, username)) {
+                return Response.ok().build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found")
+                        .build();
+            }
+        } catch (EntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("User or project not found: " + e.getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error creating task: " + e.getMessage())
+                    .build();
+        }
+
+
+    }
+
     @DELETE
     @Path("/{projectId}")
     public Response deleteProject(@PathParam("projectId") Long projectId) {
@@ -77,4 +103,6 @@ public class ProjectResource {
                     .build();
         }
     }
+
+
 }

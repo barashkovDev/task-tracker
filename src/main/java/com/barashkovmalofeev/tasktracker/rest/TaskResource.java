@@ -25,10 +25,21 @@ public class TaskResource {
 
         List<Task> tasks = taskService.getTasksByAssignedUser(userId);
 
-        if (tasks.isEmpty()) {
-            // Возвращаем HTTP 404
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+
+        List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
+                .map(task -> new TaskResponseDTO(task))
+                .collect(Collectors.toList());
+
+        return Response.ok(taskResponseDTOS).build();
+    }
+
+    @GET
+    @Path("/project/{projectId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTasksByProjectId(@PathParam("projectId") Long projectId) {
+
+        List<Task> tasks = taskService.getTasksByProject(projectId);
+
 
         List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
                 .map(task -> new TaskResponseDTO(task))

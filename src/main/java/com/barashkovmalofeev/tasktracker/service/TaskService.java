@@ -36,6 +36,10 @@ public class TaskService {
         return taskRepository.findByAssignedUserId(userId);
     }
 
+    public List<Task> getTasksByProject(Long projectId) {
+        return taskRepository.findByProject(projectId);
+    }
+
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Task createTask(TaskCreateDTO taskDTO) {
         Task task = new Task();
@@ -105,4 +109,6 @@ public class TaskService {
         }
         return  taskRepository.saveTask(task);
     }
+
+
 }

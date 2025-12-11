@@ -62,4 +62,14 @@ public class ProjectService {
     public void deleteTaskById(Long projectId) {
         projectRepository.deleteProjectById(projectId);
     }
+
+    public boolean addUserToProject(Long projectId, String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return false;
+        }
+        projectRepository.addUserToProject(projectId, user.getId());
+        return true;
+
+    }
 }
