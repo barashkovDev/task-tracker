@@ -33,5 +33,17 @@ public class UserService {
         return !results.isEmpty();
     }
 
+    public User authenticate(String username, String password) {
+        String jpql = "SELECT u FROM User u " +
+                "WHERE u.username = :username AND u.password = :password";
+
+        TypedQuery<User> query = em.createQuery(jpql, User.class);
+        query.setParameter("username", username);
+        query.setParameter("password", password);
+        query.setMaxResults(1);
+
+        List<User> results = query.getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
 
 }

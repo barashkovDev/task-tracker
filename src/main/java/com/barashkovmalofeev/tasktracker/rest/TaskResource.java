@@ -103,10 +103,6 @@ public class TaskResource {
 
         List<Task> tasks = taskService.getTasksByAssignedUser(Long.parseLong(userId));
 
-        if (tasks.isEmpty()) {
-            // Возвращаем HTTP 404
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
 
         List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
                 .map(task -> new TaskResponseDTO(task))
