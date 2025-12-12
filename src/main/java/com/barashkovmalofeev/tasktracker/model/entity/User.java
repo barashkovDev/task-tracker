@@ -24,6 +24,15 @@ public class User {
     )
     private Set<Project> projects = new HashSet<>();
 
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),        // внешний ключ на AppUser.id
+            inverseJoinColumns = @JoinColumn(name = "role_id")  // внешний ключ на Role.id
+    )
+    private Set<Role> roles = new HashSet<>();
+
     public User() {}
 
     public User(Set<Project> projects, String password, String username) {
@@ -31,7 +40,11 @@ public class User {
         this.password = password;
         this.username = username;
     }
-
+    public User(String username, String password, Set<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+    }
     public User(String username, String password) {
         this.username = username;
         this.password = password;
@@ -52,5 +65,13 @@ public class User {
 
     public void setProjects(Set<Project> projects) {
         this.projects = projects;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 }

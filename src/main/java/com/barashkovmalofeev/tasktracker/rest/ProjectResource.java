@@ -6,12 +6,17 @@ import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
 import com.barashkovmalofeev.tasktracker.model.dto.TaskResponseDTO;
 import com.barashkovmalofeev.tasktracker.model.entity.Project;
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
+import com.barashkovmalofeev.tasktracker.model.entity.User;
 import com.barashkovmalofeev.tasktracker.service.ProjectService;
 import com.barashkovmalofeev.tasktracker.service.TaskService;
+import com.barashkovmalofeev.tasktracker.service.UserService;
 
 import javax.ejb.EJB;
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -23,13 +28,24 @@ public class ProjectResource {
     @EJB
     private ProjectService projectService;
 
+    @EJB
+    private UserService userService;
+
+    @Context
+    private HttpServletRequest req;
+
     @GET
     @Path("/user")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProjectsByUserId(@CookieParam("userId") Long userId) {
+    public Response getProjectsByUserId() {
+        User user = userService.getCurrentUser(req);
 
-        List<ProjectResponseDTO> projects = projectService.getProjectsByAssignedUser(userId);
-
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"unauthorized\"}")
+                    .build();
+        }
+        List<ProjectResponseDTO> projects = projectService.getProjectsByAssignedUser(user.getId());
 
         return Response.ok(projects).build();
     }
