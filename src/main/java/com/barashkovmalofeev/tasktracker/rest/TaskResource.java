@@ -6,8 +6,10 @@ import com.barashkovmalofeev.tasktracker.model.entity.Task;
 import com.barashkovmalofeev.tasktracker.model.entity.User;
 import com.barashkovmalofeev.tasktracker.service.TaskService;
 import com.barashkovmalofeev.tasktracker.service.UserService;
+import com.barashkovmalofeev.tasktracker.testAOP.TaskAdvice;
 
 import javax.ejb.EJB;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -62,6 +64,7 @@ public class TaskResource {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
+    @Interceptors(TaskAdvice.class)
     public Response createTask(TaskCreateDTO taskDTO){
         try {
             // Создаем Task из DTO
