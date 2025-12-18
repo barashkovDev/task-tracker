@@ -4,8 +4,10 @@ import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
 import com.barashkovmalofeev.tasktracker.model.dto.TaskResponseDTO;
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
 import com.barashkovmalofeev.tasktracker.service.TaskService;
+import com.barashkovmalofeev.tasktracker.testAOP.TaskAdvice;
 
 import javax.ejb.EJB;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Path("/tasks")
 public class TaskResource {
-    @EJB // Предполагая, что TaskService - это EJB
+    @EJB
     private TaskService taskService;
 
     @GET
@@ -51,6 +53,7 @@ public class TaskResource {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
+    @Interceptors(TaskAdvice.class)
     public Response createTask(TaskCreateDTO taskDTO){
         try {
             // Создаем Task из DTO
