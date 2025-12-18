@@ -3,13 +3,17 @@ package com.barashkovmalofeev.tasktracker.rest;
 import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
 import com.barashkovmalofeev.tasktracker.model.dto.TaskResponseDTO;
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
+import com.barashkovmalofeev.tasktracker.model.entity.User;
 import com.barashkovmalofeev.tasktracker.service.TaskService;
+import com.barashkovmalofeev.tasktracker.service.UserService;
 import com.barashkovmalofeev.tasktracker.testAOP.TaskAdvice;
 
 import javax.ejb.EJB;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -19,6 +23,13 @@ import java.util.stream.Collectors;
 public class TaskResource {
     @EJB
     private TaskService taskService;
+
+
+    @EJB
+    private UserService userService;
+
+    @Context
+    private HttpServletRequest req;
 
     @GET
     @Path("/user/{userId}")
@@ -96,15 +107,15 @@ public class TaskResource {
     @GET
     @Path("/user")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTasksByUserIdCookie(@CookieParam("userId") String userId) {
-
-        if (userId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("User ID cookie is required")
+    public Response getTasksByUserIdCookie() {
+        User user = userService.getCurrentUser(req);
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"unauthorized\"}")
                     .build();
         }
 
-        List<Task> tasks = taskService.getTasksByAssignedUser(Long.parseLong(userId));
+        List<Task> tasks = taskService.getTasksByAssignedUser(user.getId());
 
 
         List<TaskResponseDTO> taskResponseDTOS = tasks.stream()

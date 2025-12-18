@@ -10,6 +10,33 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
+<!--    security-->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>rest-api</web-resource-name>
+            <url-pattern>/rest/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>employee</role-name>
+        </auth-constraint>
+        <user-data-constraint>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+
+
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/api/login.jsp</form-login-page>
+
+        </form-login-config>
+        <realm-name>TaskTrackerRealm</realm-name>
+    </login-config>
+
+    <security-role>
+        <role-name>employee</role-name>
+    </security-role>
 <!--    &lt;!&ndash; API сервлеты &ndash;&gt;-->
 <!--    <servlet>-->
 <!--        <servlet-name>ApiServlet</servlet-name>-->

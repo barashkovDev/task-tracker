@@ -16,7 +16,6 @@ public class CorsFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        // Разрешаем запросы с любого origin (в production укажите конкретный)
         String origin = httpRequest.getHeader("Origin");
         if (origin != null) {
             httpResponse.setHeader("Access-Control-Allow-Origin", origin);
@@ -31,22 +30,11 @@ public class CorsFilter implements Filter {
                 "Origin, X-Requested-With, Content-Type, Accept, Authorization");
         httpResponse.setHeader("Access-Control-Max-Age", "3600");
 
-        // Для OPTIONS запроса сразу возвращаем 200 OK
         if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
             return;
         }
 
         chain.doFilter(request, response);
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Инициализация не требуется
-    }
-
-    @Override
-    public void destroy() {
-        // Очистка не требуется
     }
 }
