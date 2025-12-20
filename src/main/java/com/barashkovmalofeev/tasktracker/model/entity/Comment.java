@@ -3,6 +3,8 @@ package com.barashkovmalofeev.tasktracker.model.entity;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Comment")
@@ -71,4 +73,5 @@ public class Comment {
     public void setTask(Task task) {
         this.task = task;
     }
+
 }

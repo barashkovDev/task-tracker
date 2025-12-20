@@ -70,6 +70,5 @@ public class ProjectService {
         }
         projectRepository.addUserToProject(projectId, user.getId());
         return true;
-
     }
 }

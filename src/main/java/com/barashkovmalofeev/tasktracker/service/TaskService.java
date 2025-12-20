@@ -1,6 +1,7 @@
 package com.barashkovmalofeev.tasktracker.service;
 
 import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
+import com.barashkovmalofeev.tasktracker.model.dto.TaskFilterDto;
 import com.barashkovmalofeev.tasktracker.model.entity.Project;
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
 import com.barashkovmalofeev.tasktracker.model.entity.User;
@@ -14,15 +15,19 @@ import javax.ejb.EJB; // Для внедрения EJB, если репозит�
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Stateless
 public class TaskService {
 
-    // Если TaskRepository помечен как @Stateless (EJB)
     @EJB
     private TaskRepository taskRepository;
 
@@ -31,6 +36,9 @@ public class TaskService {
 
     @EJB
     private ProjectRepository projectRepository;
+
+    @PersistenceContext(unitName = "taskTrackerPU")
+    private EntityManager em;
 
     public List<Task> getTasksByAssignedUser(Long userId) {
         return taskRepository.findByAssignedUserId(userId);
@@ -110,5 +118,91 @@ public class TaskService {
         return  taskRepository.saveTask(task);
     }
 
+    public List<Task> findTasksByProjectWithFilters(Long projectId, TaskFilterDto filter) {
+        // Начинаем построение JPQL запроса
+        StringBuilder jpql = new StringBuilder(
+                "SELECT DISTINCT t FROM Task t " +
+                        "LEFT JOIN t.comments c " +
+                        "WHERE t.project.id = :projectId "
+        );
 
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("projectId", projectId);
+
+        // Добавляем условия фильтрации
+        if (filter.getDescription() != null && !filter.getDescription().trim().isEmpty()) {
+            jpql.append("AND LOWER(t.description) LIKE LOWER(:description) ");
+            parameters.put("description", "%" + filter.getDescription().trim() + "%");
+        }
+
+        if (filter.getName() != null && !filter.getName().trim().isEmpty()) {
+            jpql.append("AND LOWER(t.name) LIKE LOWER(:name) ");
+            parameters.put("name", "%" + filter.getName().trim() + "%");
+        }
+
+        if (filter.getStatus() != null) {
+            jpql.append("AND t.status = :status ");
+            parameters.put("status", filter.getStatus());
+        }
+
+        if (filter.getComment() != null && !filter.getComment().trim().isEmpty()) {
+            jpql.append("AND LOWER(c.text) LIKE LOWER(:comment) ");
+            parameters.put("comment", "%" + filter.getComment().trim() + "%");
+        }
+
+        jpql.append("ORDER BY t.productionDate DESC");
+
+        // Создаем и выполняем запрос
+        TypedQuery<Task> query = em.createQuery(jpql.toString(), Task.class);
+
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
+
+        return query.getResultList();
+    }
+
+    public List<Task> findTasksByUserWithFilters(Long userId, TaskFilterDto filter) {
+        // Начинаем построение JPQL запроса
+        StringBuilder jpql = new StringBuilder(
+                "SELECT DISTINCT t FROM Task t " +
+                        "LEFT JOIN t.comments c " +
+                        "WHERE t.assignedUser.id = :userId "
+        );
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("userId", userId);
+
+        // Добавляем условия фильтрации
+        if (filter.getDescription() != null && !filter.getDescription().trim().isEmpty()) {
+            jpql.append("AND LOWER(t.description) LIKE LOWER(:description) ");
+            parameters.put("description", "%" + filter.getDescription().trim() + "%");
+        }
+
+        if (filter.getName() != null && !filter.getName().trim().isEmpty()) {
+            jpql.append("AND LOWER(t.name) LIKE LOWER(:name) ");
+            parameters.put("name", "%" + filter.getName().trim() + "%");
+        }
+
+        if (filter.getStatus() != null) {
+            jpql.append("AND t.status = :status ");
+            parameters.put("status", filter.getStatus());
+        }
+
+        if (filter.getComment() != null && !filter.getComment().trim().isEmpty()) {
+            jpql.append("AND LOWER(c.text) LIKE LOWER(:comment) ");
+            parameters.put("comment", "%" + filter.getComment().trim() + "%");
+        }
+
+        jpql.append("ORDER BY t.productionDate DESC");
+
+        // Создаем и выполняем запрос
+        TypedQuery<Task> query = em.createQuery(jpql.toString(), Task.class);
+
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
+
+        return query.getResultList();
+    }
 }

@@ -30,4 +30,10 @@ public class NotificationRepository {
             return em.merge(notification);  // UPDATE
         }
     }
+
+    public Notification findById(Long id) {
+        return em.find(Notification.class, id);
+    }
+
+
 }

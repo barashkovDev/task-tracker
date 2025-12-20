@@ -18,6 +18,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import javax.ws.rs.core.Response;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Entered
 @Interceptor
@@ -60,7 +61,10 @@ public class TaskAdvice implements Serializable {
                     TaskResponseDTO createdTask = (TaskResponseDTO) responseEntity;
                     Notification notification = new Notification();
                     notification.setAssignedUser(userRepository.findById(createdTask.getAssignedUserId()));
-                    notification.setText("На вас назначили задачу номер " + createdTask.getId());
+                    notification.setText("На вас назначили задачу");
+                    notification.setTaskName(createdTask.getName());
+                    notification.setProductionDate(LocalDate.now());
+                    notification.setRead(false);
                     notificationRepository.saveNotification(notification);
                 }
             }
@@ -83,24 +87,24 @@ public class TaskAdvice implements Serializable {
             return;
         }
 
-        // Получаем СТАРУЮ задачу из БД
         Task oldTask = taskRepository.findById(taskId);
         if (oldTask == null) {
             return;
         }
 
         Long oldUserId = (oldTask.getAssignedUser() != null) ? oldTask.getAssignedUser().getId() : null;
-        Long newUserId = taskDTO.getAssignedUserId(); // из входящего DTO!
+        Long newUserId = taskDTO.getAssignedUserId();
 
-        // Сравниваем: если пользователь изменился — уведомляем НОВОГО
         if (!(oldUserId.equals(newUserId)) && newUserId != null) {
             User newAssignedUser = userRepository.findById(newUserId);
             if (newAssignedUser != null) {
                 Notification notification = new Notification();
                 notification.setAssignedUser(newAssignedUser);
-                notification.setText("На вас назначили задачу номер " + taskId);
+                notification.setText("На вас назначили задачу");
+                notification.setTaskName(updatedTask.getName());
+                notification.setProductionDate(LocalDate.now());
+                notification.setRead(false);
                 notificationRepository.saveNotification(notification);
-                LOGGER.info("Sent reassignment notification for task " + taskId + " to user " + newUserId);
             }
         }
     }
