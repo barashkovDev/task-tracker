@@ -7,6 +7,8 @@ import com.barashkovmalofeev.tasktracker.model.enums.TaskStatus;
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Task")
@@ -27,6 +29,8 @@ public class Task {
     @ManyToOne // Много задач (Task) к Одному Пользователю (User)
     @JoinColumn(name = "assigned_user_id") // Внешний ключ в таблице Task
     private User assignedUser;
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
     private LocalDate productionDate;
     private LocalDate endDate;
     private TaskComplexity complexity;
@@ -156,5 +160,13 @@ public class Task {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

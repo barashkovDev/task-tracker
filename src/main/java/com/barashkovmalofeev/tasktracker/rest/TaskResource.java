@@ -1,14 +1,17 @@
 package com.barashkovmalofeev.tasktracker.rest;
 
 import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
+import com.barashkovmalofeev.tasktracker.model.dto.TaskFilterDto;
 import com.barashkovmalofeev.tasktracker.model.dto.TaskResponseDTO;
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
 import com.barashkovmalofeev.tasktracker.model.entity.User;
+import com.barashkovmalofeev.tasktracker.service.ProjectService;
 import com.barashkovmalofeev.tasktracker.service.TaskService;
 import com.barashkovmalofeev.tasktracker.service.UserService;
 import com.barashkovmalofeev.tasktracker.testAOP.TaskAdvice;
 
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +33,46 @@ public class TaskResource {
 
     @Context
     private HttpServletRequest req;
+
+    @Inject
+    private ProjectService projectService;
+
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    @Path("/project/{projectId}/filter")
+    public Response filterTasksByProject(
+            @PathParam("projectId") Long projectId,
+            TaskFilterDto filterDto) {
+
+
+
+        // Получаем отфильтрованные задачи
+        List<Task> tasks = taskService.findTasksByProjectWithFilters(projectId, filterDto);
+
+        List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
+                .map(task -> new TaskResponseDTO(task))
+                .collect(Collectors.toList());
+
+        return Response.ok(taskResponseDTOS).build();
+    }
+
+    @POST
+    @Consumes("application/json")
+    @Produces("application/json")
+    @Path("/user/filter")
+    public Response filterTasksByUser(
+            @CookieParam("userId") Long userId,
+            TaskFilterDto filterDto) {
+
+        List<Task> tasks = taskService.findTasksByUserWithFilters(userId, filterDto);
+
+        List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
+                .map(task -> new TaskResponseDTO(task))
+                .collect(Collectors.toList());
+
+        return Response.ok(taskResponseDTOS).build();
+    }
 
     @GET
     @Path("/user/{userId}")
