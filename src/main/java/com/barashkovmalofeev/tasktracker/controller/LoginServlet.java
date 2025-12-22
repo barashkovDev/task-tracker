@@ -53,12 +53,17 @@ public class LoginServlet extends HttpServlet {
             User user = userService.getUserByUsername(username);
 
             Cookie cookie = new Cookie("userId", user.getId().toString());
+            Cookie cookie2 = new Cookie("userName", user.getUsername());
 
             cookie.setPath("/");
+            cookie2.setPath("/");
 
             cookie.setMaxAge(7 * 24 * 60 * 60);
+            cookie2.setMaxAge(7 * 24 * 60 * 60);
 
             response.addCookie(cookie);
+            response.addCookie(cookie2);
+
             response.sendRedirect("/");
         } catch (ServletException e) {
             request.setAttribute("error", "Invalid username or password.");

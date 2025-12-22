@@ -43,14 +43,15 @@ public class RegistrationServlet extends HttpServlet {
             // 2. Вызов сервиса для регистрации
             User newUser = userService.createUser(username, password);
 
-            // 3. Обработка успеха
             request.getSession().setAttribute("success", "User " + newUser.getUsername() + " registered successfully!");
-            // Перенаправляем на главную или страницу входа, чтобы избежать двойной отправки формы (Post/Redirect/Get)
             Cookie cookie = new Cookie("userId", newUser.getId().toString());
+            Cookie cookie2 = new Cookie("userName", newUser.getUsername());
 
             cookie.setPath("/");
+            cookie2.setPath("/");
 
             cookie.setMaxAge(7 * 24 * 60 * 60);
+            cookie2.setMaxAge(7 * 24 * 60 * 60);
 
             request.logout();
             HttpSession session = request.getSession(false);
@@ -60,6 +61,8 @@ public class RegistrationServlet extends HttpServlet {
             request.login(username, password);
 
             response.addCookie(cookie);
+            response.addCookie(cookie2);
+
             response.sendRedirect("/");
         } catch (Exception e) {
             request.setAttribute("error", e.getMessage());
