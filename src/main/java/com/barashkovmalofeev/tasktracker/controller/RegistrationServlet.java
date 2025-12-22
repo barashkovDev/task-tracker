@@ -55,6 +55,8 @@ public class RegistrationServlet extends HttpServlet {
 
             cookie.setMaxAge(7 * 24 * 60 * 60);
 
+            request.login(username, password);
+
             response.addCookie(cookie);
             response.sendRedirect("/");
         } catch (Exception e) {

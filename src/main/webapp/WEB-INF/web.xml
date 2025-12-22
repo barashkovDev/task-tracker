@@ -13,8 +13,25 @@
 <!--    security-->
     <security-constraint>
         <web-resource-collection>
+            <web-resource-name>rest-api-preflight</web-resource-name>
+            <url-pattern>/rest/*</url-pattern>
+            <http-method>OPTIONS</http-method>
+        </web-resource-collection>
+
+        <user-data-constraint>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
             <web-resource-name>rest-api</web-resource-name>
             <url-pattern>/rest/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>POST</http-method>
+            <http-method>PUT</http-method>
+            <http-method>DELETE</http-method>
+            <http-method>PATCH</http-method>
         </web-resource-collection>
         <auth-constraint>
             <role-name>employee</role-name>

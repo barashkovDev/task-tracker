@@ -5,14 +5,18 @@ import com.barashkovmalofeev.tasktracker.model.dto.NotificationResponseDTO;
 import com.barashkovmalofeev.tasktracker.model.dto.TaskCreateDTO;
 import com.barashkovmalofeev.tasktracker.model.dto.TaskResponseDTO;
 import com.barashkovmalofeev.tasktracker.model.entity.Notification;
+import com.barashkovmalofeev.tasktracker.model.entity.User;
 import com.barashkovmalofeev.tasktracker.model.entity.Task;
 import com.barashkovmalofeev.tasktracker.repository.NotificationRepository;
 import com.barashkovmalofeev.tasktracker.service.CommentService;
 import com.barashkovmalofeev.tasktracker.service.NotificationService;
+import com.barashkovmalofeev.tasktracker.service.UserService;
 
 import javax.ejb.EJB;
+import javax.servlet.http.HttpServletRequest;
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -21,25 +25,32 @@ import java.util.stream.Collectors;
 
 @Path("/notifications")
 public class NotificationResource {
-
     @EJB
-    private NotificationService notificationService;
+    private UserService userService;
 
     @EJB
     private NotificationRepository notificationRepository;
 
+    @EJB
+    private NotificationService notificationService;
+
+    @Context
+    private HttpServletRequest req;
+
     @GET
-    @Path("/{userId}")
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCommentsByTaskId(@PathParam("userId") Long userId) {
-        if (userId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("User ID cookie is required")
+    public Response getCommentsByTaskId() {
+        User user = userService.getCurrentUser(req);
+
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"unauthorized\"}")
                     .build();
         }
 
         List<Notification> notifications =
-                notificationService.getTasksByAssignedUser(userId);
+                notificationService.getTasksByAssignedUser(user.getId());
 
         List<NotificationResponseDTO> notificationResponseDTOS = notifications.stream()
                 .map(notification -> new NotificationResponseDTO(notification))

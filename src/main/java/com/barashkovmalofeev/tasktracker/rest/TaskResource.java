@@ -62,10 +62,16 @@ public class TaskResource {
     @Produces("application/json")
     @Path("/user/filter")
     public Response filterTasksByUser(
-            @CookieParam("userId") Long userId,
             TaskFilterDto filterDto) {
 
-        List<Task> tasks = taskService.findTasksByUserWithFilters(userId, filterDto);
+        User user = userService.getCurrentUser(req);
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"error\":\"unauthorized\"}")
+                    .build();
+        }
+
+        List<Task> tasks = taskService.findTasksByUserWithFilters(user.getId(), filterDto);
 
         List<TaskResponseDTO> taskResponseDTOS = tasks.stream()
                 .map(task -> new TaskResponseDTO(task))

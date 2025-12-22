@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter("/*") // Фильтр для всех запросов
+@WebFilter("/*")
 public class CorsFilter implements Filter {
 
     @Override
@@ -19,8 +19,7 @@ public class CorsFilter implements Filter {
         String origin = httpRequest.getHeader("Origin");
         if (origin != null) {
             httpResponse.setHeader("Access-Control-Allow-Origin", origin);
-        } else {
-            httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+            httpResponse.setHeader("Vary", "Origin");
         }
 
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
@@ -30,6 +29,7 @@ public class CorsFilter implements Filter {
                 "Origin, X-Requested-With, Content-Type, Accept, Authorization");
         httpResponse.setHeader("Access-Control-Max-Age", "3600");
 
+        // Preflight-запрос
         if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
             return;
