@@ -19,6 +19,7 @@ import javax.interceptor.InvocationContext;
 import javax.ws.rs.core.Response;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entered
 @Interceptor
@@ -37,7 +38,20 @@ public class TaskAdvice implements Serializable {
     protected Object protocolInvocation(final InvocationContext invocationContext) throws Exception {
 
         String methodName = invocationContext.getMethod().getName();
-        Object result = invocationContext.proceed();
+        Object[] params = invocationContext.getParameters();
+
+        Object result = null;
+        Object[] oldStateForUpdate = null;
+
+        if ("updateTask".equals(methodName) && params != null && params.length >= 2) {
+            if (params[0] instanceof Long && params[1] instanceof TaskCreateDTO) {
+                Long taskId = (Long) params[0];
+                Task oldTaskBeforeProceed = taskRepository.findById(taskId);
+                oldStateForUpdate = new Object[]{oldTaskBeforeProceed};
+            }
+        }
+
+        result = invocationContext.proceed();
 
         LOGGER.infof("Метод: %s", invocationContext.getMethod().getName());
         LOGGER.infof("Класс: %s", invocationContext.getMethod().getDeclaringClass().getName());
@@ -45,14 +59,10 @@ public class TaskAdvice implements Serializable {
         if ("createTask".equals(methodName)) {
             handleCreateTask(result, invocationContext);
         } else if ("updateTask".equals(methodName)) {
-            Response response = (Response) result;
-            TaskResponseDTO dto = (TaskResponseDTO) response.getEntity();
-            Task task = taskRepository.findById(dto.getId());
-            handleUpdateTask(invocationContext, task);
+            handleUpdateTask(invocationContext, oldStateForUpdate);
         }
 
         return result;
-
     }
 
     private void handleCreateTask(Object result, InvocationContext invocationContext) {
@@ -73,7 +83,7 @@ public class TaskAdvice implements Serializable {
         }
     }
 
-    private void handleUpdateTask(InvocationContext ctx, Task updatedTask) {
+    private void handleUpdateTask(InvocationContext ctx, Object[] oldStateInfo) {
         LOGGER.info("Task updated");
         Object[] params = ctx.getParameters();
         if (params == null || params.length < 2) {
@@ -90,24 +100,44 @@ public class TaskAdvice implements Serializable {
             return;
         }
 
-        Task oldTask = taskRepository.findById(taskId);
+        // Получаем старую задачу из сохраненного состояния
+        Task oldTask = null;
+        if (oldStateInfo != null && oldStateInfo.length > 0 && oldStateInfo[0] instanceof Task) {
+            oldTask = (Task) oldStateInfo[0];
+        }
+
         if (oldTask == null) {
+            LOGGER.info("Не удалось получить старое состояние задачи с ID: " + taskId);
             return;
         }
 
         Long oldUserId = (oldTask.getAssignedUser() != null) ? oldTask.getAssignedUser().getId() : null;
         Long newUserId = taskDTO.getAssignedUserId();
 
-        if (!(oldUserId.equals(newUserId)) && newUserId != null) {
-            User newAssignedUser = userRepository.findById(newUserId);
-            if (newAssignedUser != null) {
-                Notification notification = new Notification();
-                notification.setAssignedUser(newAssignedUser);
-                notification.setText("На вас назначили задачу");
-                notification.setTaskName(updatedTask.getName());
-                notification.setProductionDate(LocalDate.now());
-                notification.setRead(false);
-                notificationRepository.saveNotification(notification);
+        if (!Objects.equals(oldUserId, newUserId)) {
+            if (newUserId != null) {
+                User newAssignedUser = userRepository.findById(newUserId);
+                if (newAssignedUser != null) {
+                    Notification notification = new Notification();
+                    notification.setAssignedUser(newAssignedUser);
+                    notification.setText("На вас переназначили задачу");
+                    notification.setTaskName(oldTask.getName());
+                    notification.setProductionDate(LocalDate.now());
+                    notification.setRead(false);
+                    notificationRepository.saveNotification(notification);
+                }
+            }
+            else if (oldUserId != null) {
+                User oldAssignedUser = userRepository.findById(oldUserId);
+                if (oldAssignedUser != null) {
+                    Notification notification = new Notification();
+                    notification.setAssignedUser(oldAssignedUser);
+                    notification.setText("Задача снята с вас");
+                    notification.setTaskName(oldTask.getName());
+                    notification.setProductionDate(LocalDate.now());
+                    notification.setRead(false);
+                    notificationRepository.saveNotification(notification);
+                }
             }
         }
     }
