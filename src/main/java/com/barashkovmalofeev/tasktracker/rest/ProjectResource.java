@@ -120,5 +120,21 @@ public class ProjectResource {
         }
     }
 
+    @DELETE
+    @Path("/user/{username}/{projectId}")
+    public Response deleteUserFromProject(@PathParam("username") String username, @PathParam("projectId") Long projectId) {
+        try {
+            projectService.deleteUserFromProject(projectId, username);
+
+            return Response.status(Response.Status.OK)
+                    .build();
+
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting project: " + e.getMessage())
+                    .build();
+        }
+    }
+
 
 }

@@ -104,4 +104,25 @@ public class ProjectRepository {
     }
 
 
+    public void deleteUserFromProject(Long projectId, Long userId) {
+        Project project = em.find(Project.class, projectId);
+        User user = em.find(User.class, userId);
+
+        if (project == null) {
+            throw new EntityNotFoundException("Project not found with id: " + projectId);
+        }
+        if (user == null) {
+            throw new EntityNotFoundException("User not found with id: " + userId);
+        }
+
+        if (!project.getUsers().contains(user)) {
+            LOG.warnf("Пользователь ID: %d не состоит в проекте ID: %d", userId, projectId);
+            throw new IllegalArgumentException("User is not assigned to this project");
+        }
+
+        boolean removedFromUser = user.getProjects().remove(project);
+        boolean removedFromProject = project.getUsers().remove(user);
+
+        em.merge(user);
+    }
 }
