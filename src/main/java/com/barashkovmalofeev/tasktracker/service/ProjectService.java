@@ -71,4 +71,13 @@ public class ProjectService {
         projectRepository.addUserToProject(projectId, user.getId());
         return true;
     }
+
+    public boolean deleteUserFromProject(Long projectId, String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return false;
+        }
+        projectRepository.deleteUserFromProject(projectId, user.getId());
+        return true;
+    }
 }
