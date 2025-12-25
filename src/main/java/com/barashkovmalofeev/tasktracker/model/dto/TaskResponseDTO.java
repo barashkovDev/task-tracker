@@ -19,11 +19,9 @@ public class TaskResponseDTO {
     private TaskStatus status;
     private Boolean isTaskCompleted;
 
-    // Только ID связанных сущностей
     private Long assignedUserId;
     private Long projectId;
 
-    // Конструктор из Entity
     public TaskResponseDTO(Task task) {
         this.id = task.getId();
         this.name = task.getName();
@@ -36,7 +34,6 @@ public class TaskResponseDTO {
         this.status = task.getStatus();
         this.isTaskCompleted = task.getTaskCompleted();
 
-        // Только ID, а не целые объекты
         if (task.getAssignedUser() != null) {
             this.assignedUserId = task.getAssignedUser().getId();
         }
@@ -46,7 +43,6 @@ public class TaskResponseDTO {
         }
     }
 
-    // Геттеры (сеттеры по необходимости)
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }

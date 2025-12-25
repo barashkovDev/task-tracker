@@ -40,7 +40,6 @@ public class CommentResource {
 
             Comment comment = commentService.createComment(commentCreateDTO);
 
-            // Возвращаем DTO для ответа
             CommentResponseDTO commentResponseDTO = new CommentResponseDTO(comment);
 
             return Response.status(Response.Status.CREATED)

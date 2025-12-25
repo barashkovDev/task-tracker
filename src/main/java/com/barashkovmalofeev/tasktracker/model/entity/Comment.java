@@ -13,12 +13,12 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne // Много комментариев (Comment) к Одному Пользователю (User)
-    @JoinColumn(name = "user_author_id") // Внешний ключ в таблице Comment
+    @ManyToOne
+    @JoinColumn(name = "user_author_id")
     private User author;
 
-    @ManyToOne // Много комментариев (Comment) к Одной задаче (Task)
-    @JoinColumn(name = "task_id") // Внешний ключ в таблице Task
+    @ManyToOne
+    @JoinColumn(name = "task_id")
     private Task task;
 
     private String text;

@@ -28,10 +28,10 @@ public class CommentRepository {
 
     public Comment saveComment(Comment comment) {
         if (comment.getId() == null) {
-            em.persist(comment);  // INSERT
+            em.persist(comment);
             return comment;
         } else {
-            return em.merge(comment);  // UPDATE
+            return em.merge(comment);
         }
     }
 }

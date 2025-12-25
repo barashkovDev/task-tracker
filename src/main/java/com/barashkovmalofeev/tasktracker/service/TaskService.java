@@ -68,7 +68,6 @@ public class TaskService {
             task.setAssignedUser(user);
         }
 
-        // 3. Находим и устанавливаем Project (если указан)
         if (taskDTO.getProjectId() != null) {
             Project project = projectRepository.findById(taskDTO.getProjectId());
             if (project == null) {
@@ -77,7 +76,6 @@ public class TaskService {
             task.setProject(project);
         }
 
-        // 4. Сохраняем
         return taskRepository.saveTask(task);
     }
 
@@ -97,7 +95,6 @@ public class TaskService {
         task.setEndDate(taskDTO.getEndDate());
         if(taskDTO.getStatus().equals(TaskStatus.DONE)) {
             task.setEndDate(LocalDate.now());
-            //task.setSpentTime(Duration.between(task.getProductionDate(), task.getEndDate()));
         }
         if (taskDTO.getAssignedUserId() != null) {
             User user = userRepository.findById(taskDTO.getAssignedUserId());
@@ -107,7 +104,6 @@ public class TaskService {
             task.setAssignedUser(user);
         }
 
-        // 3. Находим и устанавливаем Project (если указан)
         if (taskDTO.getProjectId() != null) {
             Project project = projectRepository.findById(taskDTO.getProjectId());
             if (project == null) {
@@ -119,7 +115,6 @@ public class TaskService {
     }
 
     public List<Task> findTasksByProjectWithFilters(Long projectId, TaskFilterDto filter) {
-        // Начинаем построение JPQL запроса
         StringBuilder jpql = new StringBuilder(
                 "SELECT DISTINCT t FROM Task t " +
                         "LEFT JOIN t.comments c " +
@@ -129,7 +124,6 @@ public class TaskService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("projectId", projectId);
 
-        // Добавляем условия фильтрации
         if (filter.getDescription() != null && !filter.getDescription().trim().isEmpty()) {
             jpql.append("AND LOWER(t.description) LIKE LOWER(:description) ");
             parameters.put("description", "%" + filter.getDescription().trim() + "%");
@@ -152,7 +146,6 @@ public class TaskService {
 
         jpql.append("ORDER BY t.productionDate DESC");
 
-        // Создаем и выполняем запрос
         TypedQuery<Task> query = em.createQuery(jpql.toString(), Task.class);
 
         for (Map.Entry<String, Object> entry : parameters.entrySet()) {
@@ -163,7 +156,6 @@ public class TaskService {
     }
 
     public List<Task> findTasksByUserWithFilters(Long userId, TaskFilterDto filter) {
-        // Начинаем построение JPQL запроса
         StringBuilder jpql = new StringBuilder(
                 "SELECT DISTINCT t FROM Task t " +
                         "LEFT JOIN t.comments c " +
@@ -173,7 +165,6 @@ public class TaskService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("userId", userId);
 
-        // Добавляем условия фильтрации
         if (filter.getDescription() != null && !filter.getDescription().trim().isEmpty()) {
             jpql.append("AND LOWER(t.description) LIKE LOWER(:description) ");
             parameters.put("description", "%" + filter.getDescription().trim() + "%");
@@ -196,7 +187,6 @@ public class TaskService {
 
         jpql.append("ORDER BY t.productionDate DESC");
 
-        // Создаем и выполняем запрос
         TypedQuery<Task> query = em.createQuery(jpql.toString(), Task.class);
 
         for (Map.Entry<String, Object> entry : parameters.entrySet()) {

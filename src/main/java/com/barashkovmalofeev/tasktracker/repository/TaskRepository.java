@@ -29,10 +29,10 @@ public class TaskRepository {
 
     public Task saveTask(Task task) {
         if (task.getId() == null) {
-            em.persist(task);  // INSERT
+            em.persist(task);
             return task;
         } else {
-            return em.merge(task);  // UPDATE
+            return em.merge(task);
         }
     }
 
