@@ -13,7 +13,7 @@ public class Project {
 
     private String name;
 
-    @ManyToMany(mappedBy = "projects") // Ссылаемся на имя поля "projects" в классе User
+    @ManyToMany(mappedBy = "projects")
     private Set<User> users = new HashSet<>();
 
     public Project(){}

@@ -8,7 +8,6 @@ public class TaskFilterDto {
     private TaskStatus status;
     private String comment;
 
-    // Конструктор по умолчанию (обязателен для JSON десериализации)
     public TaskFilterDto() {
     }
 

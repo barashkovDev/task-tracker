@@ -62,7 +62,7 @@ public class NotificationResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{notificationId}")
-    public Response updateTask(@PathParam("notificationId") Long notificationId, Map<String, Object> data) {
+    public Response updateNotification(@PathParam("notificationId") Long notificationId, Map<String, Object> data) {
 
         try {
             Boolean isRead = (Boolean) data.get("isRead");

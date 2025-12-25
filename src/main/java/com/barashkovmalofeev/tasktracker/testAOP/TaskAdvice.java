@@ -39,12 +39,16 @@ public class TaskAdvice implements Serializable {
         String methodName = invocationContext.getMethod().getName();
         Object result = invocationContext.proceed();
 
+        LOGGER.infof("Метод: %s", invocationContext.getMethod().getName());
+        LOGGER.infof("Класс: %s", invocationContext.getMethod().getDeclaringClass().getName());
+
         if ("createTask".equals(methodName)) {
             handleCreateTask(result, invocationContext);
         } else if ("updateTask".equals(methodName)) {
-            if (result instanceof Task) {
-                handleUpdateTask(invocationContext, (Task) result);
-            }
+            Response response = (Response) result;
+            TaskResponseDTO dto = (TaskResponseDTO) response.getEntity();
+            Task task = taskRepository.findById(dto.getId());
+            handleUpdateTask(invocationContext, task);
         }
 
         return result;
@@ -52,26 +56,25 @@ public class TaskAdvice implements Serializable {
     }
 
     private void handleCreateTask(Object result, InvocationContext invocationContext) {
-        if(invocationContext.getMethod().getName().equals("createTask")) {
-            LOGGER.info("Task created");
-            if (result instanceof Response) {
-                Response response = (Response) result;
-                Object responseEntity = response.getEntity();
-                if (responseEntity instanceof TaskResponseDTO) {
-                    TaskResponseDTO createdTask = (TaskResponseDTO) responseEntity;
-                    Notification notification = new Notification();
-                    notification.setAssignedUser(userRepository.findById(createdTask.getAssignedUserId()));
-                    notification.setText("На вас назначили задачу");
-                    notification.setTaskName(createdTask.getName());
-                    notification.setProductionDate(LocalDate.now());
-                    notification.setRead(false);
-                    notificationRepository.saveNotification(notification);
-                }
+        LOGGER.info("Task created");
+        if (result instanceof Response) {
+            Response response = (Response) result;
+            Object responseEntity = response.getEntity();
+            if (responseEntity instanceof TaskResponseDTO) {
+                TaskResponseDTO createdTask = (TaskResponseDTO) responseEntity;
+                Notification notification = new Notification();
+                notification.setAssignedUser(userRepository.findById(createdTask.getAssignedUserId()));
+                notification.setText("На вас назначили задачу");
+                notification.setTaskName(createdTask.getName());
+                notification.setProductionDate(LocalDate.now());
+                notification.setRead(false);
+                notificationRepository.saveNotification(notification);
             }
         }
     }
 
     private void handleUpdateTask(InvocationContext ctx, Task updatedTask) {
+        LOGGER.info("Task updated");
         Object[] params = ctx.getParameters();
         if (params == null || params.length < 2) {
             return;

@@ -6,7 +6,6 @@ public class UserDTO {
     private Long id;
     private String username;
 
-    // Конструкторы
     public UserDTO() {}
 
     public UserDTO(Long id, String username, String email) {
@@ -19,7 +18,6 @@ public class UserDTO {
         this.username = user.getUsername();
     }
 
-    // Геттеры и сеттеры
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

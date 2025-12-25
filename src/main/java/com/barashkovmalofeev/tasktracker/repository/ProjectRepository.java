@@ -90,7 +90,6 @@ public class ProjectRepository {
             throw new EntityNotFoundException("User not found with id: " + userId);
         }
 
-        // Проверяем, не добавлен ли уже пользователь
         if (!project.getUsers().contains(user)) {
             project.getUsers().add(user);
             user.getProjects().add(project);

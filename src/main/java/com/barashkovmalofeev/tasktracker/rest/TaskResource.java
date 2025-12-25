@@ -9,6 +9,7 @@ import com.barashkovmalofeev.tasktracker.service.ProjectService;
 import com.barashkovmalofeev.tasktracker.service.TaskService;
 import com.barashkovmalofeev.tasktracker.service.UserService;
 import com.barashkovmalofeev.tasktracker.testAOP.TaskAdvice;
+import org.jboss.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
@@ -36,6 +37,8 @@ public class TaskResource {
 
     @Inject
     private ProjectService projectService;
+
+    private static final Logger LOGGER = Logger.getLogger(TaskResource.class.toString());
 
     @POST
     @Consumes("application/json")
@@ -178,13 +181,12 @@ public class TaskResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{taskId}")
+    @Interceptors(TaskAdvice.class)
     public Response updateTask(@PathParam("taskId") Long taskId, TaskCreateDTO taskCreateDTO) {
-
+        LOGGER.info("run updateTask");
         try {
-            // Создаем Task из DTO
             Task updatedTask = taskService.updateTask(taskId, taskCreateDTO);
 
-            // Возвращаем DTO для ответа
             TaskResponseDTO responseDTO = new TaskResponseDTO(updatedTask);
 
             return Response.status(Response.Status.CREATED)
