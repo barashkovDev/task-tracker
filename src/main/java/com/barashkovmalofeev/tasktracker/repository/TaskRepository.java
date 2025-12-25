@@ -51,6 +51,15 @@ public class TaskRepository {
 
         em.remove(task);
     }
-
+    public void unassignUserFromProject(Long projectId, Long userId) {
+        em.createQuery(
+                "UPDATE Task t " +
+                        "SET t.assignedUser = NULL " +
+                        "WHERE t.assignedUser.id = :userId " +
+                        "AND t.project.id = :projectId")
+        .setParameter("userId", userId)
+        .setParameter("projectId", projectId)
+        .executeUpdate();
+    }
 
 }

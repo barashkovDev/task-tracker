@@ -27,7 +27,7 @@ public class Task {
     @JoinColumn(name = "project_id")
     private Project project;
     @ManyToOne // Много задач (Task) к Одному Пользователю (User)
-    @JoinColumn(name = "assigned_user_id") // Внешний ключ в таблице Task
+    @JoinColumn(name = "assigned_user_id", nullable = true) // Внешний ключ в таблице Task
     private User assignedUser;
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
@@ -169,4 +169,6 @@ public class Task {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
+
 }

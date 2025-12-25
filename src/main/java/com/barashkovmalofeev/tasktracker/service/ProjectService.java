@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Stateless
 public class ProjectService {
+
     @EJB
     private TaskRepository taskRepository;
 
@@ -72,11 +73,12 @@ public class ProjectService {
         return true;
     }
 
-    public boolean deleteUserFromProject(Long projectId, String username) {
-        User user = userRepository.findByUsername(username);
+    public boolean deleteUserFromProject(Long projectId, Long userId) {
+        User user = userRepository.findById(userId);
         if (user == null) {
             return false;
         }
+        taskRepository.unassignUserFromProject(projectId, user.getId());
         projectRepository.deleteUserFromProject(projectId, user.getId());
         return true;
     }
